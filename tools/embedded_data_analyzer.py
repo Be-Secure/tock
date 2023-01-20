@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # Licensed under the Apache License, Version 2.0 or the MIT License.
 # SPDX-License-Identifier: Apache-2.0 OR MIT
+# Copyright Tock Contributors 2023
 
 from audioop import add
 from embedded_data_visualizer import create_html_file

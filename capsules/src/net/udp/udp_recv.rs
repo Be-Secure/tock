@@ -1,5 +1,7 @@
 // Licensed under the Apache License, Version 2.0 or the MIT License.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2023
+// Copyright Tock Contributors 2023
 
 //! This file contains the definition and implementation for the UDP reception
 //! interface. It follows the same virtualization model as that described in `udp_send.rs`,

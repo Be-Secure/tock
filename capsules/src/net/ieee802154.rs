@@ -1,5 +1,7 @@
 // Licensed under the Apache License, Version 2.0 or the MIT License.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2023
+// Copyright Tock Contributors 2023
 
 //! Implements IEEE 802.15.4-2015 header encoding and decoding.
 //! Supports the general MAC frame format, which encompasses data frames, beacon

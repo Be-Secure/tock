@@ -1,5 +1,7 @@
 // Licensed under the Apache License, Version 2.0 or the MIT License.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2023
+// Copyright Tock Contributors 2023
 
 pub const TIMER_IRQ_0: u32 = 0;
 pub const TIMER_IRQ_1: u32 = 1;

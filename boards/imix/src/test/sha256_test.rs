@@ -1,5 +1,7 @@
 // Licensed under the Apache License, Version 2.0 or the MIT License.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2023
+// Copyright Tock Contributors 2023
 
 //! This tests a software SHA256 implementation. To run this test,
 //! add this line to the imix boot sequence:

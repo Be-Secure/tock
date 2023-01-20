@@ -1,5 +1,7 @@
 // Licensed under the Apache License, Version 2.0 or the MIT License.
 // SPDX-License-Identifier: Apache-2.0 OR MIT
+// Copyright Tock Contributors 2023
+// Copyright Tock Contributors 2023
 
 /* Though TCP has not yet been implemented for the Tock Networking stackm
 this file defines the structure of the TCPHeader and TCPPacket structs
