@@ -23,7 +23,6 @@ use capsules::ccs811::Ccs811;
 use capsules::virtual_i2c::{I2CDevice, MuxI2C};
 use core::mem::MaybeUninit;
 use kernel::component::Component;
-use kernel::deferred_call::DeferredCallClient;
 
 // Setup static space for the objects.
 #[macro_export]
@@ -65,7 +64,7 @@ impl Component for Ccs811Component {
             .write(I2CDevice::new(self.i2c_mux, self.i2c_address));
         let buffer = static_buffer.1.write([0; 6]);
         let ccs811 = static_buffer.2.write(Ccs811::new(ccs811_i2c, buffer));
-        ccs811.register();
+        kernel::deferred_call::DeferredCallClient::register(ccs811);
 
         ccs811_i2c.set_client(ccs811);
         ccs811.startup();
