@@ -637,7 +637,7 @@ unsafe fn setup() -> (
         use capsules::sha256::Sha256Software;
 
         let sha_soft = static_init!(Sha256Software<'static>, Sha256Software::new());
-        sha_soft.initialize_callback_handle();
+        kernel::deferred_call::DeferredCallClient::register(sha_soft);
 
         SHA256SOFT = Some(sha_soft);
     }
