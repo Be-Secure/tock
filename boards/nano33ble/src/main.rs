@@ -65,8 +65,8 @@ const APDS9960_PIN: Pin = Pin::P0_19;
 /// Personal Area Network ID for the IEEE 802.15.4 radio
 const PAN_ID: u16 = 0xABCD;
 /// Gateway (or next hop) MAC Address
-const DST_MAC_ADDR: capsules::net::ieee802154::MacAddress =
-    capsules::net::ieee802154::MacAddress::Short(49138);
+const DST_MAC_ADDR: extra_capsules::net::ieee802154::MacAddress =
+    extra_capsules::net::ieee802154::MacAddress::Short(49138);
 const DEFAULT_CTX_PREFIX_LEN: u8 = 8; //Length of context for 6LoWPAN compression
 const DEFAULT_CTX_PREFIX: [u8; 16] = [0x0 as u8; 16]; //Context for 6LoWPAN Compression
 
@@ -90,10 +90,10 @@ static mut PROCESSES: [Option<&'static dyn kernel::process::Process>; NUM_PROCS]
 static mut CHIP: Option<&'static nrf52840::chip::NRF52<Nrf52840DefaultPeripherals>> = None;
 static mut PROCESS_PRINTER: Option<&'static kernel::process::ProcessPrinterText> = None;
 static mut CDC_REF_FOR_PANIC: Option<
-    &'static capsules::usb::cdc::CdcAcm<
+    &'static extra_capsules::usb::cdc::CdcAcm<
         'static,
         nrf52::usbd::Usbd,
-        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc>,
+        core_capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc>,
     >,
 > = None;
 static mut NRF52_POWER: Option<&'static nrf52840::power::Power> = None;
@@ -114,36 +114,36 @@ fn baud_rate_reset_bootloader_enter() {
 
 /// Supported drivers by the platform
 pub struct Platform {
-    ble_radio: &'static capsules::ble_advertising_driver::BLE<
+    ble_radio: &'static extra_capsules::ble_advertising_driver::BLE<
         'static,
         nrf52::ble_radio::Radio<'static>,
-        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+        core_capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
     >,
-    ieee802154_radio: &'static capsules::ieee802154::RadioDriver<'static>,
-    console: &'static capsules::console::Console<'static>,
-    pconsole: &'static capsules::process_console::ProcessConsole<
+    ieee802154_radio: &'static extra_capsules::ieee802154::RadioDriver<'static>,
+    console: &'static core_capsules::console::Console<'static>,
+    pconsole: &'static core_capsules::process_console::ProcessConsole<
         'static,
-        { capsules::process_console::DEFAULT_COMMAND_HISTORY_LEN },
-        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+        { core_capsules::process_console::DEFAULT_COMMAND_HISTORY_LEN },
+        core_capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
         components::process_console::Capability,
     >,
-    proximity: &'static capsules::proximity::ProximitySensor<'static>,
-    temperature: &'static capsules::temperature::TemperatureSensor<'static>,
-    humidity: &'static capsules::humidity::HumiditySensor<'static>,
-    gpio: &'static capsules::gpio::GPIO<'static, nrf52::gpio::GPIOPin<'static>>,
-    led: &'static capsules::led::LedDriver<
+    proximity: &'static extra_capsules::proximity::ProximitySensor<'static>,
+    temperature: &'static extra_capsules::temperature::TemperatureSensor<'static>,
+    humidity: &'static extra_capsules::humidity::HumiditySensor<'static>,
+    gpio: &'static core_capsules::gpio::GPIO<'static, nrf52::gpio::GPIOPin<'static>>,
+    led: &'static core_capsules::led::LedDriver<
         'static,
         LedLow<'static, nrf52::gpio::GPIOPin<'static>>,
         3,
     >,
-    adc: &'static capsules::adc::AdcVirtualized<'static>,
-    rng: &'static capsules::rng::RngDriver<'static>,
+    adc: &'static core_capsules::adc::AdcVirtualized<'static>,
+    rng: &'static core_capsules::rng::RngDriver<'static>,
     ipc: kernel::ipc::IPC<{ NUM_PROCS as u8 }>,
-    alarm: &'static capsules::alarm::AlarmDriver<
+    alarm: &'static core_capsules::alarm::AlarmDriver<
         'static,
-        capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
+        core_capsules::virtual_alarm::VirtualMuxAlarm<'static, nrf52::rtc::Rtc<'static>>,
     >,
-    udp_driver: &'static capsules::net::udp::UDPDriver<'static>,
+    udp_driver: &'static extra_capsules::net::udp::UDPDriver<'static>,
     scheduler: &'static RoundRobinSched<'static>,
     systick: cortexm4::systick::SysTick,
 }
@@ -154,18 +154,18 @@ impl SyscallDriverLookup for Platform {
         F: FnOnce(Option<&dyn kernel::syscall::SyscallDriver>) -> R,
     {
         match driver_num {
-            capsules::console::DRIVER_NUM => f(Some(self.console)),
-            capsules::proximity::DRIVER_NUM => f(Some(self.proximity)),
-            capsules::temperature::DRIVER_NUM => f(Some(self.temperature)),
-            capsules::humidity::DRIVER_NUM => f(Some(self.humidity)),
-            capsules::gpio::DRIVER_NUM => f(Some(self.gpio)),
-            capsules::alarm::DRIVER_NUM => f(Some(self.alarm)),
-            capsules::led::DRIVER_NUM => f(Some(self.led)),
-            capsules::adc::DRIVER_NUM => f(Some(self.adc)),
-            capsules::rng::DRIVER_NUM => f(Some(self.rng)),
-            capsules::ble_advertising_driver::DRIVER_NUM => f(Some(self.ble_radio)),
-            capsules::ieee802154::DRIVER_NUM => f(Some(self.ieee802154_radio)),
-            capsules::net::udp::DRIVER_NUM => f(Some(self.udp_driver)),
+            core_capsules::console::DRIVER_NUM => f(Some(self.console)),
+            extra_capsules::proximity::DRIVER_NUM => f(Some(self.proximity)),
+            extra_capsules::temperature::DRIVER_NUM => f(Some(self.temperature)),
+            extra_capsules::humidity::DRIVER_NUM => f(Some(self.humidity)),
+            core_capsules::gpio::DRIVER_NUM => f(Some(self.gpio)),
+            core_capsules::alarm::DRIVER_NUM => f(Some(self.alarm)),
+            core_capsules::led::DRIVER_NUM => f(Some(self.led)),
+            core_capsules::adc::DRIVER_NUM => f(Some(self.adc)),
+            core_capsules::rng::DRIVER_NUM => f(Some(self.rng)),
+            extra_capsules::ble_advertising_driver::DRIVER_NUM => f(Some(self.ble_radio)),
+            extra_capsules::ieee802154::DRIVER_NUM => f(Some(self.ieee802154_radio)),
+            extra_capsules::net::udp::DRIVER_NUM => f(Some(self.udp_driver)),
             kernel::ipc::DRIVER_NUM => f(Some(&self.ipc)),
             _ => f(None),
         }
@@ -271,7 +271,7 @@ pub unsafe fn main() {
 
     let gpio = components::gpio::GpioComponent::new(
         board_kernel,
-        capsules::gpio::DRIVER_NUM,
+        core_capsules::gpio::DRIVER_NUM,
         components::gpio_component_helper!(
             nrf52840::gpio::GPIOPin,
             2 => &nrf52840_peripherals.gpio_port[GPIO_D2],
@@ -321,7 +321,7 @@ pub unsafe fn main() {
         .finalize(components::alarm_mux_component_static!(nrf52::rtc::Rtc));
     let alarm = components::alarm::AlarmDriverComponent::new(
         board_kernel,
-        capsules::alarm::DRIVER_NUM,
+        core_capsules::alarm::DRIVER_NUM,
         mux_alarm,
     )
     .finalize(components::alarm_component_static!(nrf52::rtc::Rtc));
@@ -349,7 +349,7 @@ pub unsafe fn main() {
 
     let cdc = components::cdc::CdcAcmComponent::new(
         &nrf52840_peripherals.usbd,
-        capsules::usb::cdc::MAX_CTRL_PACKET_SIZE_NRF52840,
+        extra_capsules::usb::cdc::MAX_CTRL_PACKET_SIZE_NRF52840,
         0x2341,
         0x005a,
         strings,
@@ -385,7 +385,7 @@ pub unsafe fn main() {
     // Setup the console.
     let console = components::console::ConsoleComponent::new(
         board_kernel,
-        capsules::console::DRIVER_NUM,
+        core_capsules::console::DRIVER_NUM,
         uart_mux,
     )
     .finalize(components::console_component_static!());
@@ -399,7 +399,7 @@ pub unsafe fn main() {
 
     let rng = components::rng::RngComponent::new(
         board_kernel,
-        capsules::rng::DRIVER_NUM,
+        core_capsules::rng::DRIVER_NUM,
         &base_peripherals.trng,
     )
     .finalize(components::rng_component_static!());
@@ -413,7 +413,7 @@ pub unsafe fn main() {
         .finalize(components::adc_mux_component_static!(nrf52840::adc::Adc));
 
     let adc_syscall =
-        components::adc::AdcVirtualComponent::new(board_kernel, capsules::adc::DRIVER_NUM)
+        components::adc::AdcVirtualComponent::new(board_kernel, core_capsules::adc::DRIVER_NUM)
             .finalize(components::adc_syscall_component_helper!(
                 // A0
                 components::adc::AdcComponent::new(
@@ -492,7 +492,7 @@ pub unsafe fn main() {
     let proximity = components::proximity::ProximityComponent::new(
         apds9960,
         board_kernel,
-        capsules::proximity::DRIVER_NUM,
+        extra_capsules::proximity::DRIVER_NUM,
     )
     .finalize(components::proximity_component_static!());
 
@@ -500,13 +500,13 @@ pub unsafe fn main() {
         .finalize(components::hts221_component_static!());
     let temperature = components::temperature::TemperatureComponent::new(
         board_kernel,
-        capsules::temperature::DRIVER_NUM,
+        extra_capsules::temperature::DRIVER_NUM,
         hts221,
     )
     .finalize(components::temperature_component_static!());
     let humidity = components::humidity::HumidityComponent::new(
         board_kernel,
-        capsules::humidity::DRIVER_NUM,
+        extra_capsules::humidity::DRIVER_NUM,
         hts221,
     )
     .finalize(components::humidity_component_static!());
@@ -517,7 +517,7 @@ pub unsafe fn main() {
 
     let ble_radio = components::ble::BLEComponent::new(
         board_kernel,
-        capsules::ble_advertising_driver::DRIVER_NUM,
+        extra_capsules::ble_advertising_driver::DRIVER_NUM,
         &base_peripherals.ble_radio,
         mux_alarm,
     )
@@ -526,7 +526,7 @@ pub unsafe fn main() {
         nrf52840::ble_radio::Radio
     ));
 
-    use capsules::net::ieee802154::MacAddress;
+    use extra_capsules::net::ieee802154::MacAddress;
 
     let aes_mux = components::ieee802154::MuxAes128ccmComponent::new(
         &base_peripherals.ecb,
@@ -541,7 +541,7 @@ pub unsafe fn main() {
     let src_mac_from_serial_num: MacAddress = MacAddress::Short(serial_num_bottom_16);
     let (ieee802154_radio, mux_mac) = components::ieee802154::Ieee802154Component::new(
         board_kernel,
-        capsules::ieee802154::DRIVER_NUM,
+        extra_capsules::ieee802154::DRIVER_NUM,
         &base_peripherals.ieee802154_radio,
         aes_mux,
         PAN_ID,
@@ -552,7 +552,7 @@ pub unsafe fn main() {
         nrf52840::ieee802154_radio::Radio,
         nrf52840::aes::AesECB<'static>
     ));
-    use capsules::net::ipv6::ip_utils::IPAddr;
+    use extra_capsules::net::ipv6::ip_utils::IPAddr;
 
     let local_ip_ifaces = static_init!(
         [IPAddr; 3],
@@ -565,7 +565,7 @@ pub unsafe fn main() {
                 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d,
                 0x1e, 0x1f,
             ]),
-            IPAddr::generate_from_mac(capsules::net::ieee802154::MacAddress::Short(
+            IPAddr::generate_from_mac(extra_capsules::net::ieee802154::MacAddress::Short(
                 serial_num_bottom_16
             )),
         ]
@@ -585,7 +585,7 @@ pub unsafe fn main() {
     // UDP driver initialization happens here
     let udp_driver = components::udp_driver::UDPDriverComponent::new(
         board_kernel,
-        capsules::net::udp::DRIVER_NUM,
+        extra_capsules::net::udp::DRIVER_NUM,
         udp_send_mux,
         udp_recv_mux,
         udp_port_table,
